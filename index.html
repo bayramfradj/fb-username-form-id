@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Required meta tags always come first -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+ 
+  
+  <title>Id To Username</title>
+
+</head>
+
+<body>
+    
+        <div class="header-container-wrapper">
+            <div class="header-container">
+              <div class="custom-header-bg">
+                <div class="page-center">
+                 <a href="index.html"> <div class="logo">ID to Username</div></a>
+                  <div class="navigation">
+                    <ul>
+                      <li><a href="dec.html" class="button"><i class="fa fa-clone" aria-hidden="true"></i>Decomposition</a></li>
+
+                      <li><a href="#" class="button click-upload"><i class="fa fa-cloud-upload" aria-hidden="true"></i>Upload</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="body-container-wrapper">
+            <div class="body-container">
+              <div class="page-center" id="up">
+                
+               
+          
+                
+                <i class="fa fa-cloud" aria-hidden="true"></i>
+                <h1>Upload Your <strong>Files</strong></h1>
+                <a class="upload" id="call-to-action"><span>Select Your Upload</span></a>
+                <form id="upload" method="post"  enctype="multipart/form-data">
+                  <div id="drop">
+                <input type="file" name="upl" id="file" class="upload-hidden">
+                    </div>
+                  </form>
+                
+                <div class="file-upload-bar-closed"></div>
+              </div>
+              <div class="page-center" style="width: 500px;" id="load">
+                <img src="assets/6.svg" />
+             </div>
+              <div class="page-center" style="width: 500px;" id="suc">
+                <img src="assets/tick.svg" width="200px" height="200px" />
+              </div>
+            </div>
+          </div>
+          
+          <div class="footer-container-wrapper">
+            <div class="footer-container">
+              <div class="custom-footer-bg">
+                <div class="page-center">
+                  <p>@Copyright </p>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+          <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.21/datatables.min.js"></script>  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   
+    <script src="assets/app.js"></script>
+    <script>
+       $(function(){
+        $("#load").hide();
+        $("#suc").hide();
+        
+
+       });
+
+        document.querySelector('#file').addEventListener('change', function() {
+            
+            
+
+            var file = document.querySelector('#file').files[0];
+           if(file.name.split('.').pop()!="csv"&&file.name.split('.').pop()!="txt")
+            {
+                alert("les fichier doit etre csv");
+            }
+            else
+            {   
+                $("#up").fadeOut("slow");
+                $("#load").fadeIn(500);
+                
+                    var reader = new FileReader();
+                    reader.readAsText(file);
+
+                    reader.onload = function(event) {
+
+                        //get the file.
+                        var csv = event.target.result;
+
+                        //split and get the rows in an array
+                        var rows = csv.split('\n');
+                        var csvContent = "";
+                        //move line by line
+                        for (var i = 1; i < rows.length; i++) {
+                            var id = rows[i];
+                            
+                            if(id.length>8& ! (isNaN(id)))
+                            {   
+                                $.ajax({
+                                    url : 'app.php?id='+id,
+                                    type : 'GET',                                   
+                                    success : function(rep){ 
+                                       
+                                      csvContent += id +","+rep+"\n";
+                                  }
+                                });
+
+                               
+                            }
+                            
+                            
+                        }
+
+                        var blob = new Blob([csvContent], { type: 'text/csv' });
+                                             
+                                              
+                                             //window.location.assign(window.URL.createObjectURL(blob));
+                                             var link = window.document.createElement('a');
+                                             link.href = window.URL.createObjectURL(blob);
+                                             // Construct filename dynamically and set to link.download
+                                             link.download = 'file-treated.csv'; 
+                                            
+                                             document.body.appendChild(link);
+                                             link.click();
+                                             document.body.removeChild(link);
+
+                        
+                         
+                        $("#load").hide();
+                       $("#suc").fadeIn("slow");
+                     }
+            }
+
+        });
+    </script>
+
+</body>
+</html>
